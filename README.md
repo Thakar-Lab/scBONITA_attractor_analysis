@@ -51,7 +51,7 @@ networks_names = {
 
 # Running the function
 all_attractors_mapped_to_by_cells, counts_for_attractors_mapped_to_by_cells, loaded_dist_dfs, datasets_addresses = Import_Attractors_Mapped_To_By_Cells_And_Their_Counts(addresses_to_datasets_files, pathways_ids, datasets_labels, networks_names)
-
+```
 
 # Step 2: Clustering attractors
 
@@ -84,5 +84,82 @@ dendrogram_saving_pathway = "Example_Dataset/Clustering_Output/"
 
 # Running the function
 set_of_clusters_per_dataset = Attractors_Clustering(all_attractors_mapped_to_by_cells, distance_threshold, dendrogram_saving_pathway, lastp_for_truncate, save_truncated_dendrogram, save_dendrogram)
+```
 
+# Step 3: Merging clustered attractors
 
+** Function: Merge_Similar_Attractors **
+
+This function merges similar attractors within each cluster to determine representative attractors for each cluster. It utilizes the output from the `Attractors_Clustering` function.
+
+** Parameters: **
+- `set_of_clusters_per_dataset`: A dictionary with dataset names as keys and values being dictionaries of cluster IDs and their respective attractors.
+- `loaded_dist_dfs`: A dictionary with dataset-signaling pathway pairs as keys and dataframes of distances between attractors and cells as values.
+- `attractors_per_dtst_ntrk_saving_path`: The directory where CSV files with cluster IDs and representative attractors will be saved.
+
+** Returns: **
+- `set_of_clusters_with_representative_attractors_per_dataset`: A dictionary with dataset names as keys and values being dictionaries of cluster ID and its representative attractor.
+
+** Example Usage: **
+
+```python
+# Where figures generated using the Merge_Similar_Attractors function will be saved
+attractors_per_dtst_ntrk_saving_path = "Example_Dataset/attractors_per_dtst_ntrk/"
+
+# Running the function
+set_of_clusters_with_representative_attractors_per_dataset = Merge_Similar_Attractors(set_of_clusters_per_dataset, loaded_dist_dfs, attractors_per_dtst_ntrk_saving_path)
+```
+
+# Step 4: Creating plots
+
+** Function: Create_Bar_Plot_And_Frequency_Plot **
+
+This function generates box plots and bar plots mapping attractors to B cells taken from healthy or ill patients. The function creates combined plots for attractors.
+
+** Parameters: **
+- `set_of_clusters_with_representative_attractors_per_dataset`: A dictionary with dataset names as keys and values being dictionaries of cluster IDs and their respective representative attractors.
+- `loaded_dist_dfs`: A dictionary with dataset-signaling pathway pairs as keys and dataframes of distances between attractors and cells as values.
+- `plots_saving_path`: The directory where generated plots will be saved.
+- `csv_saving_path`: The directory where generated csv files that include cell names per representative attractor wil be saved.
+- `attractors_representing_clusters_indices_to_plot`: A list of attractor indices to plot (empty list to plot all).
+- `datasets_cells_labels`: A dictionary specifying the phenotypes/source of B cells in each of the datasets.
+- `restrict_attractors_plotted`: A boolean value to specify if plotting should be restricted based on `attractors_representing_clusters_indices_to_plot`.
+- `Combined_Plot`: A boolean to specify whether to create a combined plot or not.
+- `bar_box_plots_fig_size`: A tuple specifying the size of the generated figure (width, height).
+
+** Example Usage: **
+
+```python
+# Attractors to plot (leave empty to plot all)
+attractors_representing_clusters_indices_to_plot = []
+
+# Should attractors be restricted based on the list above
+restrict_attractors_plotted = False
+
+# Datasets and cell labels
+datasets_cells_labels = {
+    "HIV_dataset": {"Label1": "Healthy", "Label2": "HIV"},
+    "Lung_Cancer_dataset": {"Label1": "Normal", "Label2": "Tumor"},
+    "Breast_Cancer_dataset": {"Label1": "Before", "Label2": "After"},
+    "Mild_Severe_Covid_dataset": {"Label1": "Healthy", "Label2": "COVID"},
+    "Severe_Covid_dataset": {"Label1": "Healthy", "Label2": "COVID"},
+}
+
+# Where figures will be saved
+plots_saving_path = "Example_Dataset/Clustering_Output/"
+# where csv files that include cell names per representative attractor wil be saved
+csv_saving_path = "Example_Dataset/Cells_Names_Per_Attractors/"
+
+# Running the function
+Create_Bar_Plot_And_Frequency_Plot(
+    set_of_clusters_with_representative_attractors_per_dataset,
+    loaded_dist_dfs,
+    plots_saving_path,
+    csv_saving_path,
+    attractors_representing_clusters_indices_to_plot,
+    datasets_cells_labels,
+    restrict_attractors_plotted,
+    Combined_Plot=True,
+    bar_box_plots_fig_size=(12, 4)
+)
+```
